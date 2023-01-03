@@ -1,0 +1,132 @@
+import json
+import os
+
+import requests
+import time
+from selenium.webdriver.support import expected_conditions as EC
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.select import Select
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.chrome.options import Options
+import pandas as pd
+
+
+class Job51Crawler:
+    def __init__(self, job, city, page):
+        # 表头
+        self.fieldnames = [
+            'job_id',
+            'job_name',
+            'update_time',
+            'com_name',
+            'salary',
+            'workplace',
+            'job_exp',
+            'job_edu',
+            'job_rent',
+            'company_type',
+            'company_size',
+            'job_welfare',
+            'company_ind',
+            'job_info',
+            'job_type',
+        ]
+        self.j_id = 1
+        self.job = job  # 工作名
+        self.city = city  # 城市
+        self.page = page  # 页数
+        chrome_driver = './chromedriver.exe'  # chromedriver的文件位置 https://chromedriver.chromium.org/downloads 此处下载
+        opts = Options()
+        opts.add_argument('--headless')  # 16年之后，chrome给出的解决办法，抢了PhantomJS饭碗
+        opts.add_argument('--disable-gpu')
+        opts.add_argument('--no-sandbox')  # root用户不加这条会无法运行
+        # 设置无头模式，相当于执行了opt.add_argument('--headless')和opt.add_argument('--disable-gpu')(--disable-gpu禁用gpu加速仅windows系统下执行)。
+        opts.headless = False
+        prefs = {
+            'profile.default_content_setting_values': {
+                'images': 2
+            }
+        }
+        opts.add_experimental_option('prefs', prefs)
+        try:
+            self.web = webdriver.Chrome(options=opts, executable_path=chrome_driver)
+            self.web.get(f"https://we.51job.com/pc/search?keyword={self.job}&searchType=2&sortType=0&metro=")
+            self.web.implicitly_wait(30)
+        except Exception as e:
+            print(e)
+            return
+        # 选择城市
+        self.web.find_element(by=By.CLASS_NAME, value="allcity").click()
+        WebDriverWait(self.web, 20).until(
+            EC.visibility_of_element_located((By.XPATH, f"//*[text()='{city}']")))
+        self.web.find_element(By.XPATH, f"//*[text()='{city}']").click()
+        WebDriverWait(self.web, 20).until(
+            EC.visibility_of_element_located((By.XPATH, f'//*[@id="dilog"]/div/div[3]/span/button/span')))
+        self.web.find_element(By.XPATH, f'//*[@id="dilog"]/div/div[3]/span/button/span').click()
+
+        WebDriverWait(self.web, 20).until(
+            EC.visibility_of_element_located((By.CLASS_NAME, f'btn-next')))
+
+        if self.page > 50:
+            self.page = 50
+        # 翻页操作
+        for i in range(self.page):
+            # print(self.json_data)
+            # 输出每一页的数据
+            self.get_data()
+            # 翻页
+            self.web.find_element(by=By.CLASS_NAME, value="btn-next").click()
+            print(f"page={i}")
+
+    def get_data(self):
+        WebDriverWait(self.web, 20).until(
+            EC.visibility_of_element_located((By.CLASS_NAME, 'j_joblist')))
+        job_list = self.web.find_element(by=By.CLASS_NAME, value='j_joblist')
+        data_list = []
+        # 每一条数据
+        for job in job_list.find_elements(By.CLASS_NAME, value="sensors_exposure"):
+            # 解析，存到字典中
+            item = dict()
+            item['job_id'] = self.j_id
+            self.j_id += 1
+            item['job_name'] = job.find_element(by=By.CLASS_NAME, value="jname").text
+            item['update_time'] = job.find_element(by=By.CLASS_NAME, value="time").text  # 发布日期
+            item['com_name'] = job.find_element(by=By.CLASS_NAME, value="cname").text  # 发布日期
+            item['salary'] = job.find_element(by=By.CLASS_NAME, value="sal").text  # 发布日期
+            item['workplace'] = job.find_element(by=By.XPATH, value='//div/a/p[1]/span[2]/span[1]').text  # 发布日期
+            item['job_exp'] = job.find_element(by=By.XPATH, value='//div/a/p[1]/span[2]/span[3]').text  # 工作经验
+            item['job_edu'] = job.find_element(by=By.XPATH, value='//div/a/p[1]/span[2]/span[5]').text  # 学历
+            item['job_rent'] = ''  # 招聘人数
+            s = self.web.find_element(by=By.CLASS_NAME, value="dc").text
+            if "|" in s:
+                item['company_type'] = s.split("|")[0]  # 公司类型
+                item['company_size'] = s.split("|")[1]  # 公司规模
+            else:
+                item['company_type'] = s  # 公司类型
+                item['company_size'] = ""  # 公司规模
+            item['job_welfare'] = ""  # 职位福利
+            item['company_ind'] = job.find_element(by=By.CLASS_NAME, value="int").text  # 所属行业int
+            item['job_info'] = ""
+            item['job_type'] = ""
+            print(item)
+            print("-------------")
+            data_list.append(item)
+        file = '%s_%s.csv' % (self.city, self.job)
+        # 输出到文件
+        self.save(data_list, file)
+        return data_list
+
+    def save(self, data, file):
+        # 判断是否需要表头
+        if not os.path.exists(file):
+            header = True
+        else:
+            header = False
+        df2 = pd.DataFrame(data)
+        # 输出成文件
+        df2.to_csv(file, mode='a', index=False, header=header, columns=self.fieldnames)
+
+
+if __name__ == '__main__':
+    Job51Crawler("python", "广州", 3)
