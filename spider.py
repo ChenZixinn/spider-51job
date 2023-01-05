@@ -79,7 +79,7 @@ class Job51Crawler:
             # 翻页
             self.web.find_element(by=By.CLASS_NAME, value="btn-next").click()
             print(f"page={i}")
-        file = '%s_%s.csv' % (city, job)
+        file = './data/%s_%s.csv' % (city, job)
         # 输出到文件
         self.save(all_data_list, file)
         return all_data_list

@@ -83,7 +83,7 @@ class MainUI(Tk):
         city = self.city.get()
         job = self.job.get()
         try:
-            self.df = pd.read_csv(f"./{city}_{job}.csv")
+            self.df = pd.read_csv(f"./data/{city}_{job}.csv")
             self.tips.set('爬取完毕！')
             self.show_word_cloud(job, city)
             df = self.df
@@ -159,8 +159,8 @@ class MainUI(Tk):
             background_color='white', repeat=False, mode='RGBA')  # 设置词云图对象属性
         con = w.generate(content)
         con.to_image()
-        con.to_file('%s_%s.png' % (job, city))  # 保存图片
-        image = Image.open('%s_%s.png' % (job, city)).resize((600, 400), Image.ANTIALIAS)
+        con.to_file('./img/%s_%s.png' % (job, city))  # 保存图片
+        image = Image.open('./img/%s_%s.png' % (job, city)).resize((600, 400), Image.ANTIALIAS)
         image_tk = ImageTk.PhotoImage(image=image)
         self.canvas.config(image=image_tk)
         self.canvas.image = image_tk
