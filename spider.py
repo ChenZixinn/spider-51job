@@ -57,10 +57,25 @@ class Job51Crawler:
             return
         # 选择城市
         if city:
-            self.web.find_element(by=By.CLASS_NAME, value="allcity").click()
             WebDriverWait(self.web, 20).until(
-                EC.visibility_of_element_located((By.XPATH, f"//*[text()='{city}']")))
-            self.web.find_element(By.XPATH, f"//*[text()='{city}']").click()
+                EC.visibility_of_element_located((By.CLASS_NAME, f'allcity')))
+            self.web.find_element(by=By.CLASS_NAME, value="allcity").click()
+            for i in self.web.find_elements(by=By.CLASS_NAME, value="el-tabs__item"):
+                i.click()
+
+                # time.sleep(1)
+                try:
+                    WebDriverWait(self.web, 1).until(
+                        EC.visibility_of_element_located((By.XPATH, f"//*[text()='{city}']")))
+                    self.web.find_element(By.XPATH, f"//*[text()='{city}']").click()
+                except Exception as e:
+                    pass
+
+
+            # WebDriverWait(self.web, 10).until(
+            #     EC.visibility_of_element_located((By.XPATH, f"//*[text()='{city}']")))
+            # self.web.find_element(By.XPATH, f"//*[text()='{city}']").click()
+
             WebDriverWait(self.web, 20).until(
                 EC.visibility_of_element_located((By.XPATH, f'//*[@id="dilog"]/div/div[3]/span/button/span')))
             self.web.find_element(By.XPATH, f'//*[@id="dilog"]/div/div[3]/span/button/span').click()
@@ -68,9 +83,11 @@ class Job51Crawler:
             WebDriverWait(self.web, 20).until(
                 EC.visibility_of_element_located((By.CLASS_NAME, f'btn-next')))
 
-        if page > 50:
-            page = 50
+        page_num = int(self.web.find_element(By.XPATH, '//*[@id="app"]/div/div[2]/div/div/div[2]/div/div[2]/div/div[3]/div/div/div/ul/li[last()]').text)
+        print(f"page_num:{page_num}")
         all_data_list = []
+        if page > page_num:
+            page = page_num
         # 翻页操作
         for i in range(page):
             # print(self.json_data)

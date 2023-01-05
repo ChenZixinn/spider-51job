@@ -18,9 +18,9 @@ from database import SqlConn
 import re
 
 matplotlib.use('TkAgg')
-# mpl.rcParams['font.sans-serif'] = ['SimHei']  # 中文显示
+mpl.rcParams['font.sans-serif'] = ['SimHei']  # 中文显示
 mpl.rcParams["font.family"] = 'Arial Unicode MS'  # 中文显示
-mpl.rcParams['axes.unicode_minus'] = False  # 负号显示
+# mpl.rcParams['axes.unicode_minus'] = False  # 负号显示
 
 background = '#1ecbf9'
 active_background = '#289dff'
@@ -42,6 +42,7 @@ class MainUI(Tk):
         self.title('招聘网站数据分析')
         self.job = StringVar()
         self.city = StringVar()
+        self.page = StringVar()
         self.tips = StringVar()
         self.j = Job51Crawler()
         self.setup_ui()
@@ -55,14 +56,17 @@ class MainUI(Tk):
         self.geometry('%dx%d+%d+%d' % (self.w, self.h, x, y))
 
     def setup_ui(self):
-        Label(self, bg='pink').place_configure(x=0, y=0, width=800, height=80)
+        Label(self, bg='pink').place_configure(x=0, y=0, width=1600, height=80)
         Label(self, text='职位搜索', bg='pink').place_configure(x=30, y=30)
-        ttk.Entry(self, textvariable=self.job).place_configure(x=100, y=30)
+        ttk.Entry(self, textvariable=self.job).place_configure(x=60, y=30)
 
-        Label(self, text='城市搜索(默认全国)', bg='pink').place_configure(x=300, y=30)
-        ttk.Entry(self, textvariable=self.city).place_configure(x=450, y=30)
+        Label(self, text='页数', bg='pink').place_configure(x=260, y=30)
+        ttk.Entry(self, textvariable=self.page).place_configure(x=290, y=30)
+
+        Label(self, text='城市(默认全国)', bg='pink').place_configure(x=500, y=30)
+        ttk.Entry(self, textvariable=self.city).place_configure(x=530, y=30)
         self.search_btn = ttk.Button(self, text='搜索', command=self.search, )
-        self.search_btn.place_configure(x=620, y=29)
+        self.search_btn.place_configure(x=720, y=29)
         Button(self, text='词云', command=lambda: self.show_word_cloud(self.job.get(), self.city.get()),
                bg='pink').place_configure(x=50, y=100, width=100, height=60, )
         Button(self, text='公司规模', command=lambda: self.show_company_size_pie(self.job.get(), self.city.get()),
@@ -124,8 +128,14 @@ class MainUI(Tk):
             #     data = self.j.parse_list(job, code, city, i)
             #     data_list.extend(data)
             # self.tips.set('爬取完毕！')
-
-            self.data_list = self.j.search_city(job,"0",city, 10)
+            page = 10
+            try:
+                p = self.page.get()
+                if p:
+                    page = int(p)
+            except Exception as e:
+                page = 10
+            self.data_list = self.j.search_city(job,"0",city, page)
             self.tips.set('爬取完毕！')
             df = pd.DataFrame(self.data_list)
             print(df)
@@ -220,9 +230,9 @@ class MainUI(Tk):
         for salary in salary_list:
             try:
                 s1 = salary.split('-')
-            except AttributeError:
+                avg_salary = sum([float(s) for s in s1]) / len(s1)
+            except Exception as e:
                 continue
-            avg_salary = sum([float(s) for s in s1]) / len(s1)
             if avg_salary < 3:
                 salary_range[0] += 1
             elif 3 <= avg_salary < 5:
@@ -319,6 +329,7 @@ class MainUI(Tk):
     # 格式化薪水
     def format_salary(string):
         try:
+            new_salary = ""
             string = str(string)
             if not string:
                 return None
@@ -351,14 +362,16 @@ class MainUI(Tk):
                     new_salary = '-'.join([str(float(i) * 30 / 1000) for i in new_salary_list])
                 else:
                     new_salary = float(string.split("元")[0])*8*22/1000
+            elif "千以下" in string:
+                new_salary = string.strip('千以下')
             elif '千' in string:
                 new_salary = string.strip('千')
             else:
                 new_salary = None
+            return new_salary
         except Exception as e:
             print(e)
             print(string)
-        return new_salary
 
     def submit(self):
         if self.data_list:
