@@ -120,7 +120,8 @@ class Job51Crawler:
             item['job_exp'] = job.find_element(by=By.XPATH, value='//div/a/p[1]/span[2]/span[3]').text  # 工作经验
             item['job_edu'] = job.find_element(by=By.XPATH, value='//div/a/p[1]/span[2]/span[5]').text  # 学历
             item['job_rent'] = ''  # 招聘人数
-            s = self.web.find_element(by=By.CLASS_NAME, value="dc").text
+            s = job.find_element(by=By.CLASS_NAME, value="dc").text
+            print(f"s:{s}")
             if "|" in s:
                 item['company_type'] = s.split("|")[0]  # 公司类型
                 item['company_size'] = s.split("|")[1]  # 公司规模
