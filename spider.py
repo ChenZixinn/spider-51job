@@ -35,7 +35,7 @@ class Job51Crawler:
         self.j_id = 1
 
     def search_city(self, job, code, city, page):
-        chrome_driver = './chromedriver'  # chromedriver的文件位置 https://chromedriver.chromium.org/downloads 此处下载
+        chrome_driver = './plugin/chromedriver'  # chromedriver的文件位置 https://chromedriver.chromium.org/downloads 此处下载
         opts = Options()
         opts.add_argument('--headless')  # 16年之后，chrome给出的解决办法，抢了PhantomJS饭碗
         opts.add_argument('--disable-gpu')

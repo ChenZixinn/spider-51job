@@ -16,3 +16,10 @@
 33574:M 04 Jan 2023 10:13:32.644 * monotonic clock: POSIX clock_gettime
 33574:M 04 Jan 2023 10:13:32.645 # Warning: Could not create server TCP listening socket 127.0.0.1:6379: bind: Address already in use
 33574:M 04 Jan 2023 10:13:32.645 # Failed listening on port 6379 (TCP), aborting.
+44467:C 05 Jan 2023 12:19:59.598 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+44467:C 05 Jan 2023 12:19:59.599 # Redis version=6.2.6, bits=64, commit=00000000, modified=0, pid=44467, just started
+44467:C 05 Jan 2023 12:19:59.599 # Configuration loaded
+44467:M 05 Jan 2023 12:19:59.602 * Increased maximum number of open files to 10032 (it was originally set to 256).
+44467:M 05 Jan 2023 12:19:59.602 * monotonic clock: POSIX clock_gettime
+44467:M 05 Jan 2023 12:19:59.603 # Warning: Could not create server TCP listening socket 127.0.0.1:6379: bind: Address already in use
+44467:M 05 Jan 2023 12:19:59.604 # Failed listening on port 6379 (TCP), aborting.

@@ -18,8 +18,8 @@ from database import SqlConn
 import re
 
 matplotlib.use('TkAgg')
-mpl.rcParams['font.sans-serif'] = ['SimHei']  # 中文显示
-# mpl.rcParams["font.family"] = 'Arial Unicode MS'  # 中文显示
+# mpl.rcParams['font.sans-serif'] = ['SimHei']  # 中文显示
+mpl.rcParams["font.family"] = 'Arial Unicode MS'  # 中文显示
 mpl.rcParams['axes.unicode_minus'] = False  # 负号显示
 
 background = '#1ecbf9'
@@ -151,8 +151,8 @@ class MainUI(Tk):
         content = ' '.join(words)  # 此处分词之间要有空格隔开，联想到英文书写方式，每个单词之间都有一个空格。
         # 导入图片
         w = wordcloud.WordCloud(
-            font_path='C:\\Windows\\Fonts\\STFANGSO.TTF',
-            # font_path='/System/Library/fonts/PingFang.ttc',
+            # font_path='C:\\Windows\\Fonts\\STFANGSO.TTF',
+            font_path='/System/Library/fonts/PingFang.ttc',
             max_words=2000,
             height=400,
             width=400,

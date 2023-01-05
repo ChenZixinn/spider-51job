@@ -21,7 +21,7 @@ class SqlConn:
     ]
 
     def __init__(self):
-        self.conn = sqlite3.Connection('data.db')
+        self.conn = sqlite3.Connection('./db/data.db')
         self.cursor = self.conn.cursor()
 
     def create_table(self):
