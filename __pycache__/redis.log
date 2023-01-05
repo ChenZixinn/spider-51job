@@ -1,0 +1,7 @@
+43731:C 05 Jan 2023 11:43:50.803 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+43731:C 05 Jan 2023 11:43:50.804 # Redis version=6.2.6, bits=64, commit=00000000, modified=0, pid=43731, just started
+43731:C 05 Jan 2023 11:43:50.804 # Configuration loaded
+43731:M 05 Jan 2023 11:43:50.806 * Increased maximum number of open files to 10032 (it was originally set to 256).
+43731:M 05 Jan 2023 11:43:50.806 * monotonic clock: POSIX clock_gettime
+43731:M 05 Jan 2023 11:43:50.807 # Warning: Could not create server TCP listening socket 127.0.0.1:6379: bind: Address already in use
+43731:M 05 Jan 2023 11:43:50.807 # Failed listening on port 6379 (TCP), aborting.
