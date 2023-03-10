@@ -11,7 +11,7 @@ chrome 108.0.5
 
 #### 可视化展示
 ##### 词云
-![img.png](img/img5.png)
+![img.png](img/img_5.png)
 ##### 公司规模
 ![img_1.png](img/img_1.png)
 ##### 薪资
